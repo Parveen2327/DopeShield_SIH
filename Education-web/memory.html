@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anti-Doping Puzzle Game</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: "Poppins", sans-serif;
+            background-color: hsl(168, 56%, 89%);
+            color: #333;
+        }
+
+        /* Header Styles */
+        header {
+            background-color: hsl(170, 75%, 41%);
+            color: #fff;
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        .puzzle-container {
+            display: grid;
+            grid-template-columns: repeat(4, 100px);
+            grid-gap: 5px;
+            margin: 20px auto;
+            width: 420px;
+        }
+
+        .puzzle-piece, .puzzle-slot {
+            width: 100px;
+            height: 100px;
+            border: 2px solid #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #fff;
+            font-size: 20px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .puzzle-piece {
+            background-color: #007bff;
+            color: white;
+            font-size: 18px;
+            border-radius: 20px;
+        }
+
+        .puzzle-slot {
+            background-color: #eaeaea;
+            border-radius: 20px;
+        }
+
+        .puzzle-piece.correct {
+            background-color: #28a745;
+            cursor: default;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 24px;
+            text-align: center;
+        }
+
+        /* Media Queries */
+        @media (max-width: 768px) {
+            .puzzle-container {
+                grid-template-columns: repeat(3, 100px);
+                width: 350px;
+            }
+
+            .puzzle-piece, .puzzle-slot {
+                width: 90px;
+                height: 90px;
+                font-size: 16px;
+            }
+
+            #result {
+                font-size: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .puzzle-container {
+                grid-template-columns: repeat(2, 100px);
+                width: 220px;
+            }
+
+            .puzzle-piece, .puzzle-slot {
+                width: 80px;
+                height: 80px;
+                font-size: 14px;
+            }
+
+            #result {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="index.html" class="logo">
+            <img src="https://github.com/muthu-2005/Prodigy_Intern/blob/main/logo.png?raw=true" width="162" height="80" alt="DopeShield">
+        </a>
+        <h1>DopeShield Puzzle Game</h1>
+    </header>
+    <p style="text-align: center;">Drag and drop the puzzle pieces into the correct slots to complete the anti-doping message!</p>
+
+    <div class="puzzle-container" id="puzzle-container">
+        <!-- Puzzle slots -->
+        <div class="puzzle-slot" data-piece="1"></div>
+        <div class="puzzle-slot" data-piece="2"></div>
+        <div class="puzzle-slot" data-piece="3"></div>
+        <div class="puzzle-slot" data-piece="4"></div>
+
+        <!-- Puzzle pieces -->
+        <div class="puzzle-piece" draggable="true" data-piece="2">Fight</div>
+        <div class="puzzle-piece" draggable="true" data-piece="4">Doping!</div>
+        <div class="puzzle-piece" draggable="true" data-piece="1">Say No</div>
+        <div class="puzzle-piece" draggable="true" data-piece="3">To</div>
+    </div>
+
+    <div id="result"></div>
+
+    <script>
+        const puzzleSlots = document.querySelectorAll('.puzzle-slot');
+        const puzzlePieces = document.querySelectorAll('.puzzle-piece');
+        const resultDiv = document.getElementById('result');
+
+        let correctPieces = 0;
+
+        puzzlePieces.forEach(piece => {
+            piece.addEventListener('dragstart', dragStart);
+        });
+
+        puzzleSlots.forEach(slot => {
+            slot.addEventListener('dragover', dragOver);
+            slot.addEventListener('drop', dropPiece);
+        });
+
+        function dragStart(e) {
+            e.dataTransfer.setData('text/plain', e.target.getAttribute('data-piece'));
+        }
+
+        function dragOver(e) {
+            e.preventDefault();
+        }
+
+        function dropPiece(e) {
+            e.preventDefault();
+            const droppedPiece = e.dataTransfer.getData('text/plain');
+            const targetSlot = e.target.getAttribute('data-piece');
+
+            if (droppedPiece === targetSlot) {
+                const piece = document.querySelector(`.puzzle-piece[data-piece='${droppedPiece}']`);
+                e.target.appendChild(piece);
+                piece.classList.add('correct');
+                piece.setAttribute('draggable', 'false');
+                correctPieces++;
+
+                if (correctPieces === puzzleSlots.length) {
+                    resultDiv.textContent = "Congratulations! You've completed the puzzle!";
+                    resultDiv.style.color = 'green';
+                }
+            } else {
+                resultDiv.textContent = "Try again! Place the pieces in the correct order.";
+                resultDiv.style.color = 'red';
+            }
+        }
+    </script>
+
+</body>
+</html>
